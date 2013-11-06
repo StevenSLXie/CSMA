@@ -1,0 +1,2 @@
+class optimization(object):
+	def 
