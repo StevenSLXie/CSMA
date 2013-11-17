@@ -48,7 +48,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'ccaStart':
 		
-		if carrierSensing(i,'start') == 0:
+		if carrierSensing(i,'start'):
 			new = event(curEvent)
 			new.time = t + CCA_TIME
 			new.actType = 'ccaEnd'
@@ -65,7 +65,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'ccaEnd':
 
-		if carrierSensing(i,'end') == 0 and nodes[i].getCCA() == 0:
+		if carrierSensing(i,'end') and nodes[i].getCCA() == 0:
 			nodes[i].setCW(-1)
 			if nodes[i].getCW() == 0:
 				new = event(curEvent)
@@ -103,7 +103,16 @@ def action(curEvent,nodes):
 		else:
 			print 'no such tx time....'
 			sys.exit(0)
-			
+		
+		#update the power
+		nodes[i].setTXPower(5)
+		nodes[i].setPower('tx')
+		# implement the CCA information
+		for n in nodes:
+			if i == n.getID():
+				continue
+			else:
+				n.setCCAResult(i,nodes[i].getTXPower())
 
 		new1 = event(curEvent)
 		new1.src = des
@@ -117,14 +126,16 @@ def action(curEvent,nodes):
 		new2.actType = 'sendPhyFinish'
 		newList.append(new2)
 
-		if curEvent.pacAckReq:
-			new3 = event(curEvent)
-			new3.time = t + tx_time + ACK_WAIT
-			new3.actType = 'timeoutAck'
-			newList.append(new3)
+#	if curEvent.pacAckReq:
+#			new3 = event(curEvent)
+#			new3.time = t + tx_time + ACK_WAIT
+#			new3.actType = 'timeoutAck'
+#			newList.append(new3)
 
 	elif arg == 'sendPhyFinish':
-	# don't understand the logic. Leave it blank now.
+	# set up the transmitter.
+		nodes[i].setTXPower(0)
+		nodes[i].setPower('rx')
 
 		
 	elif arg == 'timeoutAck':
@@ -142,12 +153,12 @@ def action(curEvent,nodes):
 
 	elif arg == 'recvPhy':
 		model = 'ch_model'
-		pr,snr = recv_phy(i,src,model)
+		probRecv = recvPhy(i,nodes,model)
 
-		if snr >= rvThreshold:
-			probRecv = True
-		else:
-			probRecv = False
+#if snr >= rvThreshold:
+#			probRecv = True
+#		else:
+#			probRecv = False
 
 		if probRecv:
 			if curEvent.pacType == 'ack':
@@ -163,6 +174,11 @@ def action(curEvent,nodes):
 				newList.append(new)
 		else:
 			# cannot receive
+			if curEvent.pacType == 'ack':
+				new = event(curEvent)
+				new.time = t + 0.1
+				new.actType = 'timeoutAck'
+				newList.append(new)
 
 	elif arg == 'recvMac':
 		if curEvent.pacType == 'data':

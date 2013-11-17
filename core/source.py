@@ -13,9 +13,12 @@ class source(object):
 		self.BOExponent = 0
 		self.CW = 2   # contention window
 		self.CCA = 0
+		self.CCAResult = {}
+		self.ID = argv.ID
 
 # the following set of para are power para
 		self.powLevel = 5  # current power setting
+		self.powTX = 0     # the TX power, RF power.
 
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
@@ -83,6 +86,12 @@ class source(object):
 			print 'No such power mode exists...'
 			sys.exit(0)
 
+	def getTXPower(self):
+		return self.powTX
+	
+	def setTXPower(self,value):
+		self.powTX = value
+
 	def getPacket(self):
 		return self.pacSize,self.pacData
 
@@ -126,6 +135,15 @@ class source(object):
 
 	def setCCA(self,value)
 		self.CCA = value
+
+	def getID(self):
+		return self.ID
+
+	def setCCAResult(self,other,value):
+		self.CCAResult[other] = value
+
+	def getCCAResult(self):
+		return self.CCAResult
 	
 	
 
