@@ -1,4 +1,4 @@
-def revPhy(src,nodes,model):
+def recvPhy(src,nodes,model):
 	count = 0
 	for n in nodes:
 		if n.getTXPower() > 0:

@@ -9,6 +9,7 @@ def carrierSensing(i,status,nodes):
 			else:
 				power += n.getTXPower()
 		if power+NOISE > THRESHOLD:
+#			print power+NOISE
 			return False
 		else:
 			return True
@@ -18,6 +19,7 @@ def carrierSensing(i,status,nodes):
 			power += nodes[i].getCCAResult()[key]
 
 		if power+NOISE > THRESHOLD:
+#	print power
 			return False
-		else
+		else:
 			return True

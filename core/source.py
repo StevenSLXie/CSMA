@@ -14,7 +14,7 @@ class source(object):
 		self.CW = 2   # contention window
 		self.CCA = 0
 		self.CCAResult = {}
-		self.ID = argv.ID
+		self.ID = argv['ID']
 
 # the following set of para are power para
 		self.powLevel = 5  # current power setting
@@ -26,11 +26,11 @@ class source(object):
 
 # the following are for packet size and data
 		self.pacSize = 3    # in terms of slot
-		self.pacData = argv.src    # use node ID as the data
+		self.pacData = argv['src']    # use node ID as the data
 
 # the following are the node ID, destination
-		self.ID = argv.src
-		self.des = argv.des
+#	self.ID = argv.src
+		self.des = argv['des']
 
 # the following are node stat
 		self.transCount = 0
@@ -58,7 +58,7 @@ class source(object):
 			self.RTCount += 1
 		elif value == 0:
 			self.RTCount = 0
-		elif:
+		else:
 			print 'Cannot set other values for RTCount.....'
 			sys.exit(0)
 
@@ -115,7 +115,7 @@ class source(object):
 	def setCW(self,value):
 		if value == -1:
 			self.CW -= 1
-		elif value == 2
+		elif value == 2:
 			self.CW = 2
 
 	def getCW(self):
@@ -133,7 +133,7 @@ class source(object):
 	def getCCA(self):
 		return self.CCA
 
-	def setCCA(self,value)
+	def setCCA(self,value):
 		self.CCA = value
 
 	def getID(self):
@@ -145,6 +145,13 @@ class source(object):
 	def getCCAResult(self):
 		return self.CCAResult
 	
+	def updatePacStat(self,value):
+		self.packetStat[self.transCount] = value
+		self.transCount += 1
+
+	def printPacStat(self):
+		print sum(self.packetStat.values())
+		
 	
 
 
