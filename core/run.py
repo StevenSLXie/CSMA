@@ -5,6 +5,7 @@ from event import event
 import operator
 
 
+
 numOfNodes = 10
 nodes = []
 for i in range(numOfNodes):  # initialize nodes
@@ -17,7 +18,7 @@ for i in range(numOfNodes):  # initialize nodes
 
 eventList = []
 for i in range(numOfNodes-1):  # the last node as the sink
-	for t in pacGenerator(100*20,100,2000):
+	for t in pacGenerator(1000*20,100,2000):
 		argv = {}
 		argv['time'] = t
 		argv['actType'] = 'sendMac'
