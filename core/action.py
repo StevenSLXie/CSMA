@@ -22,17 +22,23 @@ def action(curEvent,nodes):
 	des = curEvent.des
 
 	newList = []
-#	if i == 5:
-#		print i,arg,t
+	nodes[i].updateEnergy(t)
 
 	if arg == 'sendMac':
+
+		#nodes[i].updateEnergy(t)
+		nodes[i].setPower('idle')
 		
 		new = copy.copy(curEvent)
 		new.time = t
 		new.actType = 'backoffStart'
 		newList.append(new)
 
+		nodes[i].timeStamping(t,'start')  # record the start of a packet
+
 	elif arg == 'backoffStart': # the start of the WHOLE backoff process, boCount = 0
+
+		nodes[i].setPower('idle')
 		nodes[i].setCW(2)
 		nodes[i].setBOCount(0)
 		minBE,maxBE = nodes[i].getBE()
@@ -44,6 +50,8 @@ def action(curEvent,nodes):
 		newList.append(new)
 	
 	elif arg == 'backoff':
+
+		nodes[i].setPower('idle')
 		new = copy.copy(curEvent)
 		tmp = random.randint(0,2**nodes[i].getBOExponent()-1)
 		new.time = t + tmp*BACKOFF_PERIOD
@@ -52,6 +60,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'ccaStart':
 		
+		nodes[i].setPower('sense')
 		if carrierSensing(i,'start',nodes):
 		#	print 'channel start is idle'
 			new = copy.copy(curEvent)
@@ -72,6 +81,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'ccaEnd':
 
+		nodes[i].setPower('idle')
 		if carrierSensing(i,'end',nodes) and nodes[i].getCCA() == 0:
 			#print 'channel end is idle'
 			nodes[i].setCW(-1)
@@ -100,6 +110,8 @@ def action(curEvent,nodes):
 				# return an empty list to indicate mission ending.
 #		print  nodes[i].getBOCount() 
 #		print 'Exceeds backoff limit...'
+				nodes[i].timeStamping(t+10000000,'end')
+				nodes[i].updateDelayStat()
 				nodes[i].updatePacStat(0)
 				nodes[i].setBOCount(0)
 				nodes[i].setRTCount(0)
@@ -112,7 +124,8 @@ def action(curEvent,nodes):
 				nodes[i].setCCA(0)
 
 	elif arg == 'sendPhy':
-	
+		
+		nodes[i].setPower('tx')
 		if curEvent.pacType == 'data':
 			tx_time = TX_TIME_DATA
 		elif curEvent.pacType == 'ack':
@@ -145,6 +158,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'sendPhyFinish':
 	# set up the transmitter.
+		nodes[i].setPower('sleep')
 		nodes[i].setTXPower(0)
 		nodes[i].setPower('rx')
 
@@ -156,10 +170,14 @@ def action(curEvent,nodes):
 
 		
 	elif arg == 'timeoutAck':
+
+		nodes[i].setPower('sleep')
 		nodes[i].setRTCount(1)
 		if nodes[i].getRTCount() > nodes[i].getRTLimit():
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
+			nodes[i].timeStamping(t+10000000,'end')
+			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(0)
 			nodes[i].setBOCount(0)
 			nodes[i].setRTCount(0)
@@ -172,6 +190,7 @@ def action(curEvent,nodes):
 			newList.append(new)
 
 	elif arg == 'recvPhy':
+		nodes[i].setPower('rx')
 		model = 'ch_model'
 		probRecv = recvPhy(i,nodes,model)
 		#print probRecv, curEvent.pacType,nodes[i].BOCount,i
@@ -202,6 +221,7 @@ def action(curEvent,nodes):
 				newList.append(new)
 
 	elif arg == 'recvMac':
+		nodes[i].setPower('idle')
 		if curEvent.pacType == 'data':
 			if curEvent.pacAckReq:
 				new = copy.copy(curEvent)
@@ -219,6 +239,8 @@ def action(curEvent,nodes):
 
 				newList.append(new)
 		elif curEvent.pacType == 'ack':
+			nodes[i].timeStamping(t,'end')
+			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(1)
 			nodes[i].setRTCount(0)
 			nodes[i].setBOCount(0)

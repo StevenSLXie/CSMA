@@ -17,8 +17,10 @@ class source(object):
 		self.ID = argv['ID']
 
 # the following set of para are power para
-		self.powLevel = 5  # current power setting
+		self.powLevel = 0  # current power setting
 		self.powTX = 0     # the TX power, RF power.
+		self.lastPowChange = 0  # time information. record the last time that power level has been changed.
+		self.energy = 0
 
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
@@ -37,6 +39,10 @@ class source(object):
 		self.packetStat = {}
 		self.delayStat = {}
 		self.energyStat = {}
+
+# the following are to record the start and end time for a packet
+		self.timeStart = 0
+		self.timeEnd = 0
 
 	def getBOCount(self):
 		return self.BOCount
@@ -151,6 +157,29 @@ class source(object):
 
 	def printPacStat(self):
 		print sum(self.packetStat.values())
+
+	def updateDelayStat(self):
+		self.delayStat[self.transCount] = self.timeEnd - self.timeStart
+
+	def printDelayStat(self):
+		#print sum(self.delayStat.values())/float(len(self.delayStat.values()))
+		for v in self.delayStat.values():
+			print self.ID,v
+
+	def timeStamping(self,time,options):
+		if options == 'start':
+			self.timeStart = time
+		elif options == 'end':
+			self.timeEnd = time
+
+	def updateEnergy(self,time):
+		# this must be done before changing the powLevel.
+		self.energy += self.powLevel*(time-self.lastPowChange)*4/250000/1000  # data rate and mW.
+		self.lastPowChange = time 
+
+	def printEnergyStat(self):
+		print self.energy
+
 		
 	
 
