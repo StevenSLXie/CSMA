@@ -178,6 +178,9 @@ class source(object):
 		elif options == 'end':
 			self.timeEnd = time
 
+	def getPacStart(self):
+		return self.timeStart
+
 	def updateEnergy(self,time):
 		# this must be done before changing the powLevel.
 		self.energy += self.powLevel*(time-self.lastPowChange)*4/250000/1000  # data rate and mW.

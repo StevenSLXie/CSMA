@@ -5,8 +5,9 @@ import sys
 import copy
 from carrierSensing import carrierSensing
 from recvPhy import recvPhy
+from initPacket import initPacket
 
-def action(curEvent,nodes):
+def action(curEvent,nodes,pacInterval):
 	BACKOFF_PERIOD = 20
 	CCA_TIME = 8
 	TX_TURNAROUND = 12
@@ -15,6 +16,7 @@ def action(curEvent,nodes):
 	TX_TIME_ACK = 22
 	ACK_WAIT = 60
 
+	pacInterval = random.randint(pacInterval - 100,pacInterval + 100)
 
 	arg = curEvent.actType
 	i = curEvent.src
@@ -111,7 +113,10 @@ def action(curEvent,nodes):
 				# return an empty list to indicate mission ending.
 #		print  nodes[i].getBOCount() 
 #		print 'Exceeds backoff limit...'
-				nodes[i].timeStamping(t+10000000,'end')
+				
+				nodes[i].timeStamping(t+100000000,'end')    # can add 100000000 to indicate failure.
+				new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+				newList.append(new)
 				nodes[i].updateDelayStat()
 				nodes[i].updatePacStat(0)
 				nodes[i].setBOCount(0)
@@ -179,6 +184,8 @@ def action(curEvent,nodes):
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
 			nodes[i].timeStamping(t+10000000,'end')
+			new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+			newList.append(new)
 			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(0)
 			nodes[i].setBOCount(0)
@@ -244,6 +251,8 @@ def action(curEvent,nodes):
 			# packet successfully sent and recieve right ack
 			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
+			new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+			newList.append(new)
 			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(1)
 			nodes[i].setRTCount(0)
