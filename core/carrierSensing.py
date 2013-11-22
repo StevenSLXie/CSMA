@@ -1,7 +1,7 @@
 def carrierSensing(i,status,nodes):
 	power = 0 
-	NOISE = 0
-	THRESHOLD = 5  # for the time being
+	NOISE = 0.2
+	THRESHOLD = 0.2  # for the time being
 	if status == 'start':
 		for n in nodes:
 			if i == n.getID():

@@ -77,8 +77,6 @@ def action(curEvent,nodes):
 			nodes[i].setCCA(1)
 			newList.append(new)
 
-
-
 	elif arg == 'ccaEnd':
 
 		nodes[i].setPower('idle')
@@ -86,6 +84,8 @@ def action(curEvent,nodes):
 			#print 'channel end is idle'
 			nodes[i].setCW(-1)
 			if nodes[i].getCW() == 0:
+				# channel is idle for 2 consecutive CCA
+				nodes[i].updateBOStat('idle')
 				new = copy.copy(curEvent)
 				new.time = t + TX_TURNAROUND
 				new.actType = 'sendPhy'
@@ -102,6 +102,7 @@ def action(curEvent,nodes):
 #print 'channel end is busy'
 			#channel is busy
 			nodes[i].setBOCount(1)
+			nodes[i].updateBOStat('busy')
 			minBE,maxBE = nodes[i].getBE()
 			nodes[i].setBOExponent(min(nodes[i].getBOExponent()+1,maxBE))
 			if nodes[i].getBOCount() > nodes[i].getBOLimit():
@@ -173,6 +174,7 @@ def action(curEvent,nodes):
 
 		nodes[i].setPower('sleep')
 		nodes[i].setRTCount(1)
+		nodes[i].updateTRYStat('fail')
 		if nodes[i].getRTCount() > nodes[i].getRTLimit():
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
@@ -239,6 +241,8 @@ def action(curEvent,nodes):
 
 				newList.append(new)
 		elif curEvent.pacType == 'ack':
+			# packet successfully sent and recieve right ack
+			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
 			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(1)

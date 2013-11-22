@@ -5,7 +5,7 @@ class source(object):
 	def __init__(self,argv):
 # the first set of parameters are CSMA/CA para.
 		self.BOLimit = 4 # back off limit
-		self.RTLimit = 3 # retry limit
+		self.RTLimit = 0 # retry limit
 		self.minBE = 3
 		self.maxBE = 5
 		self.BOCount = 0
@@ -39,6 +39,12 @@ class source(object):
 		self.packetStat = {}
 		self.delayStat = {}
 		self.energyStat = {}
+		self.BOAttemptCount = {}
+		self.TRYAttemptCount = {}
+		self.BOAllCount = 0
+		self.TRYAllCount = 0
+		self.busyChannelProb = 1
+		self.failAckProb = 1
 
 # the following are to record the start and end time for a packet
 		self.timeStart = 0
@@ -179,6 +185,30 @@ class source(object):
 
 	def printEnergyStat(self):
 		print self.energy
+
+	def updateBOStat(self,result):
+		if result == 'busy':
+			self.BOAttemptCount[self.BOAllCount] = 1
+		elif result == 'idle':
+			self.BOAttemptCount[self.BOAllCount] = 0
+
+		self.BOAllCount += 1
+		self.busyChannelProb = sum(self.BOAttemptCount.values())/float(len(self.BOAttemptCount))
+
+	def updateTRYStat(self,result):
+		if result == 'suc':
+			self.TRYAttemptCount[self.TRYAllCount] = 0
+		elif result == 'fail':
+			self.TRYAttemptCount[self.TRYAllCount] = 1
+
+		self.TRYAllCount += 1
+		self.failAckProb = sum(self.TRYAttemptCount.values())/float(len(self.TRYAttemptCount))
+
+	def printChannelIndicators(self):
+		print self.busyChannelProb,self.failAckProb,sum(self.BOAttemptCount.values()),sum(self.TRYAttemptCount.values())
+
+
+
 
 		
 	

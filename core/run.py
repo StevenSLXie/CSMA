@@ -40,9 +40,10 @@ while True:
 			eventList.append(n)
 
 for i in range(numOfNodes-1):
-	nodes[i].printPacStat()
+#	nodes[i].printPacStat()
 #nodes[i].printDelayStat()
-	nodes[i].printEnergyStat()
+#	nodes[i].printEnergyStat()
+	nodes[i].printChannelIndicators()
 	
 		
 	
