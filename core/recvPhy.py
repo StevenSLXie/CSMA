@@ -4,7 +4,7 @@ def recvPhy(src,nodes,model):
 		if n.getTXPower() > 0:
 			count += 1
 
-	if count > 1:
+	if count != 1:
 		return False
 	else:
 		return True
