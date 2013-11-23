@@ -6,8 +6,9 @@ import copy
 from carrierSensing import carrierSensing
 from recvPhy import recvPhy
 from initPacket import initPacket
+from optimization import optimization
 
-def action(curEvent,nodes,pacInterval):
+def action(curEvent,nodes):
 	BACKOFF_PERIOD = 20
 	CCA_TIME = 8
 	TX_TURNAROUND = 12
@@ -16,7 +17,7 @@ def action(curEvent,nodes,pacInterval):
 	TX_TIME_ACK = 22
 	ACK_WAIT = 60
 
-	pacInterval = random.randint(pacInterval - 100,pacInterval + 100)
+#	pacInterval = random.randint(pacInterval - 100,pacInterval + 100)
 
 	arg = curEvent.actType
 	i = curEvent.src
@@ -115,8 +116,22 @@ def action(curEvent,nodes,pacInterval):
 #		print 'Exceeds backoff limit...'
 				
 				nodes[i].timeStamping(t+100000000,'end')    # can add 100000000 to indicate failure.
-				new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+
+				# schedule new packet transmission.
+				if t < 5000*20:
+					temp = nodes[i].getPacInterval()
+					print temp
+					#print nodes[i].getChannelIndicators()
+				else:
+					if i == 0:
+						print nodes[i].getChannelIndicators()
+					x,y = nodes[i].getChannelIndicators()
+					temp = optimization(x,y,nodes[i].getPacInterval(),2)
+					nodes[i].setPacInterval(temp)
+				new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 				newList.append(new)
+
+
 				nodes[i].updateDelayStat()
 				nodes[i].updatePacStat(0)
 				nodes[i].setBOCount(0)
@@ -184,8 +199,22 @@ def action(curEvent,nodes,pacInterval):
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
 			nodes[i].timeStamping(t+10000000,'end')
-			new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+
+			# schedule new packet transmission
+			if t < 5000*20:
+				temp = nodes[i].getPacInterval()
+				print temp
+				print nodes[i].getChannelIndicators()
+			else:
+				if i == 0:
+						print nodes[i].getChannelIndicators()
+				x,y = nodes[i].getChannelIndicators()
+				temp = optimization(x,y,nodes[i].getPacInterval(),2)
+				nodes[i].setPacInterval(temp)
+
+			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
+
 			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(0)
 			nodes[i].setBOCount(0)
@@ -242,8 +271,6 @@ def action(curEvent,nodes,pacInterval):
 				new.des = curEvent.des
 				new.src = curEvent.src
 
-				#print arg,'the sink has received data'
-
 				# here can mark the receiving of the data
 
 				newList.append(new)
@@ -251,8 +278,22 @@ def action(curEvent,nodes,pacInterval):
 			# packet successfully sent and recieve right ack
 			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
-			new = initPacket(nodes[i].getPacStart()+pacInterval,i,len(nodes))
+
+			# to schedule next packet transmission. When t is small, channel indicators are not stable.
+			if t < 5000*20:
+				temp = nodes[i].getPacInterval()
+				print temp
+				print nodes[i].getChannelIndicators()
+			else:
+				if i == 0:
+						print nodes[i].getChannelIndicators()
+				x,y = nodes[i].getChannelIndicators()
+				temp = optimization(x,y,nodes[i].getPacInterval(),2)
+				nodes[i].setPacInterval(temp)
+
+			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
+
 			nodes[i].updateDelayStat()
 			nodes[i].updatePacStat(1)
 			nodes[i].setRTCount(0)

@@ -43,12 +43,15 @@ class source(object):
 		self.TRYAttemptCount = {}
 		self.BOAllCount = 0
 		self.TRYAllCount = 0
-		self.busyChannelProb = 1
-		self.failAckProb = 1
+		self.busyChannelProb = 0.01
+		self.failAckProb = 0.01
 
 # the following are to record the start and end time for a packet
 		self.timeStart = 0
 		self.timeEnd = 0
+
+# the following are the packet interval.
+		self.pacInterval = 100*20
 
 	def getBOCount(self):
 		return self.BOCount
@@ -207,8 +210,15 @@ class source(object):
 		self.TRYAllCount += 1
 		self.failAckProb = sum(self.TRYAttemptCount.values())/float(len(self.TRYAttemptCount))
 
-	def printChannelIndicators(self):
-		print self.busyChannelProb,self.failAckProb,sum(self.BOAttemptCount.values()),sum(self.TRYAttemptCount.values())
+	def getChannelIndicators(self):
+		return self.busyChannelProb,self.failAckProb
+
+	def getPacInterval(self):
+		return self.pacInterval
+
+	def setPacInterval(self,value):
+		self.pacInterval = value
+
 
 
 
