@@ -12,9 +12,9 @@ def action(curEvent,nodes):
 	BACKOFF_PERIOD = 20
 	CCA_TIME = 8
 	TX_TURNAROUND = 12
-	ACK_TIME = 12
+	ACK_TIME = 1  #12
 	TX_TIME_DATA = 60
-	TX_TIME_ACK = 22
+	TX_TIME_ACK = 19  #22
 	ACK_WAIT = 60
 
 #	pacInterval = random.randint(pacInterval - 100,pacInterval + 100)
@@ -120,11 +120,11 @@ def action(curEvent,nodes):
 				# schedule new packet transmission.
 				if t < 5000*20:
 					temp = nodes[i].getPacInterval()
-					print temp
+					#print temp
 					#print nodes[i].getChannelIndicators()
 				else:
-					if i == 0:
-						print nodes[i].getChannelIndicators()
+					#if i == 0:
+						#print nodes[i].getChannelIndicators()
 					x,y = nodes[i].getChannelIndicators()
 					temp = optimization(x,y,nodes[i].getPacInterval(),2)
 					nodes[i].setPacInterval(temp)
@@ -173,7 +173,7 @@ def action(curEvent,nodes):
 		newList.append(new1)
 
 		new2 = copy.copy(curEvent)
-		new2.time = t + tx_time + 0.1
+		new2.time = t + tx_time + 0.5
 		new2.actType = 'sendPhyFinish'
 		newList.append(new2)
 
@@ -203,11 +203,11 @@ def action(curEvent,nodes):
 			# schedule new packet transmission
 			if t < 5000*20:
 				temp = nodes[i].getPacInterval()
-				print temp
-				print nodes[i].getChannelIndicators()
+				#print temp
+				#print nodes[i].getChannelIndicators()
 			else:
-				if i == 0:
-						print nodes[i].getChannelIndicators()
+				#if i == 0:
+				#		print nodes[i].getChannelIndicators()
 				x,y = nodes[i].getChannelIndicators()
 				temp = optimization(x,y,nodes[i].getPacInterval(),2)
 				nodes[i].setPacInterval(temp)
@@ -272,21 +272,19 @@ def action(curEvent,nodes):
 				new.src = curEvent.src
 
 				# here can mark the receiving of the data
-
 				newList.append(new)
 		elif curEvent.pacType == 'ack':
 			# packet successfully sent and recieve right ack
 			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
-
 			# to schedule next packet transmission. When t is small, channel indicators are not stable.
 			if t < 5000*20:
 				temp = nodes[i].getPacInterval()
-				print temp
-				print nodes[i].getChannelIndicators()
+				#print temp
+				#print nodes[i].getChannelIndicators()
 			else:
-				if i == 0:
-						print nodes[i].getChannelIndicators()
+				#if i == 0:
+				#		print nodes[i].getChannelIndicators()
 				x,y = nodes[i].getChannelIndicators()
 				temp = optimization(x,y,nodes[i].getPacInterval(),2)
 				nodes[i].setPacInterval(temp)
@@ -300,18 +298,3 @@ def action(curEvent,nodes):
 			nodes[i].setBOCount(0)
 
 	return newList
-		
-
-		
-
-		
-
-		
-
-
-
-		
-		
-		
-		
-		

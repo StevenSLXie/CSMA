@@ -51,7 +51,7 @@ class source(object):
 		self.timeEnd = 0
 
 # the following are the packet interval.
-		self.pacInterval = 100*20
+		self.pacInterval = 6*20
 
 	def getBOCount(self):
 		return self.BOCount
@@ -164,8 +164,8 @@ class source(object):
 		self.packetStat[self.transCount] = value
 		self.transCount += 1
 
-	def printPacStat(self):
-		print sum(self.packetStat.values())
+	def getPacStat(self):
+		return sum(self.packetStat.values()),self.transCount
 
 	def updateDelayStat(self):
 		self.delayStat[self.transCount] = self.timeEnd - self.timeStart

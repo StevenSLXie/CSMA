@@ -18,4 +18,4 @@ def optimization(x,y,pacInterval,method):
 	elif method == 2:
 		return pacInterval
 	# the problem is that the algorithm will not always converge to the same value
-		
+	
