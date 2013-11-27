@@ -115,7 +115,7 @@ def action(curEvent,nodes):
 #		print  nodes[i].getBOCount() 
 #		print 'Exceeds backoff limit...'
 				
-				nodes[i].timeStamping(t+100000000,'end')    # can add 100000000 to indicate failure.
+				nodes[i].timeStamping(t,'end')    # can add 100000000 to indicate failure.
 
 				# schedule new packet transmission.
 				if t < 5000*20:
@@ -198,7 +198,7 @@ def action(curEvent,nodes):
 		if nodes[i].getRTCount() > nodes[i].getRTLimit():
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
-			nodes[i].timeStamping(t+10000000,'end')
+			nodes[i].timeStamping(t,'end')
 
 			# schedule new packet transmission
 			if t < 5000*20:
