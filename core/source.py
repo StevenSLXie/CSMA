@@ -15,25 +15,19 @@ class source(object):
 		self.CCA = 0
 		self.CCAResult = {}
 		self.ID = argv['ID']
-
 # the following set of para are power para
 		self.powLevel = 0  # current power setting
 		self.powTX = 0     # the TX power, RF power.
 		self.lastPowChange = 0  # time information. record the last time that power level has been changed.
 		self.energy = 1000 # J
-
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
 		self.pacNumber = 100
-
 # the following are for packet size and data
 		self.pacSize = 3    # in terms of slot
 		self.pacData = argv['src']    # use node ID as the data
-
 # the following are the node ID, destination
-#	self.ID = argv.src
 		self.des = argv['des']
-
 # the following are node stat
 		self.transCount = 0
 		self.packetStat = {}
@@ -45,11 +39,9 @@ class source(object):
 		self.TRYAllCount = 0
 		self.busyChannelProb = 0.01
 		self.failAckProb = 0.01
-
 # the following are to record the start and end time for a packet
 		self.timeStart = 0
 		self.timeEnd = 0
-
 # the following are the packet interval.
 		self.pacInterval = 100*20
 
