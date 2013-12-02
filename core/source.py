@@ -16,30 +16,33 @@ class source(object):
 		self.CCA = 0
 		self.CCAResult = {}
 		self.ID = argv['ID']
+<<<<<<< HEAD
 
 # the following are the x,y coordinate for the node.
 # use the name coordinate-x(y), as x,y are already being used for busy channel/retry prob
 		self.corX = 10  #unit: m
 		self.corY = 10  #unit: m
 
+=======
+>>>>>>> 8c1bc2b3aca1bda3f00ab1f1346aa632dfe8f351
 # the following set of para are power para
 		self.powLevel = 0  # current power setting
 		self.powTX = 0     # the TX power, RF power.
 		self.lastPowChange = 0  # time information. record the last time that power level has been changed.
+<<<<<<< HEAD
 		self.energy = 0 # J
 
+=======
+		self.energy = 1000 # J
+>>>>>>> 8c1bc2b3aca1bda3f00ab1f1346aa632dfe8f351
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
 		self.pacNumber = 100
-
 # the following are for packet size and data
 		self.pacSize = 3    # in terms of slot
 		self.pacData = argv['src']    # use node ID as the data
-
 # the following are the node ID, destination
-#	self.ID = argv.src
 		self.des = argv['des']
-
 # the following are node stat
 		self.transCount = 0
 		self.packetStat = {}
@@ -51,14 +54,16 @@ class source(object):
 		self.TRYAllCount = 0
 		self.busyChannelProb = 0.01
 		self.failAckProb = 0.01
-
 # the following are to record the start and end time for a packet
 		self.timeStart = 0
 		self.timeEnd = 0
+<<<<<<< HEAD
 
 # the following are for the tuning of the parameters; the old busy channel and retry prob
 		self.oldX = 0
 		self.oldY = 0
+=======
+>>>>>>> 8c1bc2b3aca1bda3f00ab1f1346aa632dfe8f351
 # the following are the packet interval.
 		self.pacInterval = random.randint(60,2000)*20
 
