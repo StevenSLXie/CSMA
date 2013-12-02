@@ -1,24 +1,25 @@
 import math
 import scipy.integrate as intl
+import numpy as np
 
-def calC(dist,shadowingStd,noiseFloor,dataRate,bandWidth,pathLossExpo,waveLength,outputPower,noise,d0,preambleLength,frameLength,S):
+def calC(dist,shadowingStd,noiseFloor,dataRate,bandWidth,pathLossExpo,waveLength,outputPower,noise,d0,preambleLength,frameLength,S,PrdBm):
 	RSSI = calRSSI(PrdBm,dist,waveLength,noise,pathLossExpo,shadowingStd,d0)
-	ebno =  RSSIToEbN0(RSSI,codeRate,dataRate,bandWidth,noiseFloor)
-	per = pError(ebno,5):
+	ebno =  RSSIToEbN0(RSSI,1,dataRate,bandWidth,noiseFloor)
+	per = pError(ebno,5)
 	ppr = packetCoding(per,1,preambleLength,frameLength)
-	return calC
-
+	return ppr
 
 def calC1(rn1,rn2,t12,t22):
 	return t12*rn1 + t22*rn2
 
 def calC2(rn1,t11):
+	#print t11*rn1
 	return t11*rn1
 
 def calRSSI(PrdBm,dist,waveLength,noise,pathLossExpo,shadowingStd,d0):
 	PL_D0 = 20*math.log((4*3.1415926)/waveLength,10) + noise
 	L = (PL_D0 + 10*pathLossExpo*math.log(dist/d0,10)) + shadowingStd
-	return prdBm - L
+	return PrdBm - L
 
 def RSSIToEbN0(RSSI,codeRate,dataRate,bandWidth,noiseFloor):
 	gain = 10*math.log(dataRate*codeRate/bandWidth,10)
@@ -46,9 +47,9 @@ def Q(x):
 	return 0.5*erfc(x/math.sqrt(2))
 
 def erfc(x):
-	return 2/math.sqrt(3.1415926)*intl.quad(intlErfc,x,float('Inf'))
+	return 2/math.sqrt(3.1415926)*intl.quad(intlErfc,x,np.inf)[0]
 
-def intlErfc():
+def intlErfc(t):
 	return math.exp(-t**2)
 
 def packetCoding(pe,encoding,preambleLength,frameLength):
