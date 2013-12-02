@@ -1,4 +1,5 @@
 import sys
+import random
 
 class source(object):
 
@@ -16,11 +17,16 @@ class source(object):
 		self.CCAResult = {}
 		self.ID = argv['ID']
 
+# the following are the x,y coordinate for the node.
+# use the name coordinate-x(y), as x,y are already being used for busy channel/retry prob
+		self.corX = 10  #unit: m
+		self.corY = 10  #unit: m
+
 # the following set of para are power para
 		self.powLevel = 0  # current power setting
 		self.powTX = 0     # the TX power, RF power.
 		self.lastPowChange = 0  # time information. record the last time that power level has been changed.
-		self.energy = 1000 # J
+		self.energy = 0 # J
 
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
@@ -50,8 +56,11 @@ class source(object):
 		self.timeStart = 0
 		self.timeEnd = 0
 
+# the following are for the tuning of the parameters; the old busy channel and retry prob
+		self.oldX = 0
+		self.oldY = 0
 # the following are the packet interval.
-		self.pacInterval = 100*20
+		self.pacInterval = random.randint(60,2000)*20
 
 	def getBOCount(self):
 		return self.BOCount
@@ -169,9 +178,12 @@ class source(object):
 	def updatePacStat(self,value):
 		self.packetStat[self.transCount] = value
 		self.transCount += 1
-
-	def getPacStat(self):
-		return sum(self.packetStat.values()),self.transCount
+	# there are 2 cases: 1 means get all the stat, n mean get n recent stat 
+	def getPacStat(self,arg = 1):
+		if arg == 1:
+			return sum(self.packetStat.values()),self.transCount
+		else:
+			return sum(self.packetStat.values()[-arg:]),arg
 
 	def updateDelayStat(self):
 		self.delayStat[self.transCount] = self.timeEnd - self.timeStart
@@ -192,7 +204,7 @@ class source(object):
 
 	def updateEnergy(self,time):
 		# this must be done before changing the powLevel.
-		self.energy -= self.powLevel*(time-self.lastPowChange)*4/250000/1000  # data rate and mW.
+		self.energy += self.powLevel*(time-self.lastPowChange)*4/250000/1000  # data rate and mW.
 		self.lastPowChange = time 
 
 	def getEnergyStat(self):
@@ -215,9 +227,12 @@ class source(object):
 
 		self.TRYAllCount += 1
 		self.failAckProb = sum(self.TRYAttemptCount.values())/float(len(self.TRYAttemptCount))
-
-	def getChannelIndicators(self):
-		return self.busyChannelProb,self.failAckProb
+	# there are 2 cases: 1 means get all data; n means get the recent n data
+	def getChannelIndicators(self,arg=1):
+		if arg == 1:
+			return self.busyChannelProb,self.failAckProb
+		else:
+			return sum(self.BOAttemptCount.values()[-arg:])/float(arg),sum(self.TRYAttemptCount.values()[-arg:])/float(arg)
 
 	def getPacInterval(self):
 		return self.pacInterval
@@ -225,11 +240,10 @@ class source(object):
 	def setPacInterval(self,value):
 		self.pacInterval = value
 
+	def getOldXY(self):
+		return self.oldX,self.oldY
 
-
-
-
-		
-	
-
+	def setOldXY(self,x,y):
+		self.oldX = x
+		self.oldY = y
 

@@ -17,7 +17,7 @@ class zigbeeNode(wx.Frame):
 		# The following texts are for diplaying real-time data.
 		self.displayData = [['Time','0',(125,-1),'s'],
 					   ['Average Delay','0',(125,-1),'ms'],
-					   ['Average Packet Suc','20',(125,-1),'%'],
+					   ['Average Packet Suc','0',(125,-1),'%'],
 					   ['Battery State','100',(125,-1),'%']]
 		self.displayBuilder(self.displayData,panel)
 
@@ -93,7 +93,7 @@ class zigbeeNode(wx.Frame):
 
 
 	def onStartConfig(self,event):
-		numOfNodes = 10
+		numOfNodes = 40
 		for i in range(numOfNodes):  # initialize nodes
 			argv = {}
 			argv['ID'] = i

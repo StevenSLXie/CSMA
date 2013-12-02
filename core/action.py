@@ -41,7 +41,7 @@ def action(curEvent,nodes):
 
 	elif arg == 'backoffStart': # the start of the WHOLE backoff process, boCount = 0
 
-		nodes[i].setPower('idle')
+		nodes[i].setPower('sleep')
 		nodes[i].setCW(2)
 		nodes[i].setBOCount(0)
 		minBE,maxBE = nodes[i].getBE()
@@ -54,7 +54,7 @@ def action(curEvent,nodes):
 	
 	elif arg == 'backoff':
 
-		nodes[i].setPower('idle')
+		nodes[i].setPower('sleep')
 		new = copy.copy(curEvent)
 		tmp = random.randint(0,2**nodes[i].getBOExponent()-1)
 		new.time = t + tmp*BACKOFF_PERIOD
@@ -118,16 +118,20 @@ def action(curEvent,nodes):
 				nodes[i].timeStamping(t,'end')    # can add 100000000 to indicate failure.
 
 				# schedule new packet transmission.
-				if t < 5000*20:
+				if t < 10000*20:
 					temp = nodes[i].getPacInterval()
 					#print temp
 					#print nodes[i].getChannelIndicators()
 				else:
-					#if i == 0:
-						#print nodes[i].getChannelIndicators()
-					x,y = nodes[i].getChannelIndicators()
-					temp = optimization(x,y,nodes[i].getPacInterval(),2)
-					nodes[i].setPacInterval(temp)
+					temp = nodes[i].getPacInterval()
+					x,y = nodes[i].getChannelIndicators(50)
+					sucPac,allPac = nodes[i].getPacStat(20) # recent 20 stat
+					oldX,oldY = nodes[i].getOldXY()
+					if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
+						temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
+						nodes[i].setPacInterval(temp)
+					nodes[i].setOldXY(x,y)
+					
 				new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 				newList.append(new)
 
@@ -158,6 +162,7 @@ def action(curEvent,nodes):
 		#update the power
 		nodes[i].setTXPower(5)
 		nodes[i].setPower('tx')
+		
 		# implement the CCA information
 		for n in nodes:
 			if i == n.getID():
@@ -201,16 +206,19 @@ def action(curEvent,nodes):
 			nodes[i].timeStamping(t,'end')
 
 			# schedule new packet transmission
-			if t < 5000*20:
+			if t < 10000*20:
 				temp = nodes[i].getPacInterval()
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				#if i == 0:
-				#		print nodes[i].getChannelIndicators()
-				x,y = nodes[i].getChannelIndicators()
-				temp = optimization(x,y,nodes[i].getPacInterval(),2)
-				nodes[i].setPacInterval(temp)
+				temp = nodes[i].getPacInterval()
+				x,y = nodes[i].getChannelIndicators(50)
+				sucPac,allPac = nodes[i].getPacStat(20) #recent 20 stat
+				oldX,oldY = nodes[i].getOldXY()
+				if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
+					temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
+					nodes[i].setPacInterval(temp)
+				nodes[i].setOldXY(x,y)
 
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
@@ -278,16 +286,20 @@ def action(curEvent,nodes):
 			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
 			# to schedule next packet transmission. When t is small, channel indicators are not stable.
-			if t < 5000*20:
+			if t < 10000*20:
 				temp = nodes[i].getPacInterval()
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				#if i == 0:
-				#		print nodes[i].getChannelIndicators()
-				x,y = nodes[i].getChannelIndicators()
-				temp = optimization(x,y,nodes[i].getPacInterval(),2)
-				nodes[i].setPacInterval(temp)
+				temp = nodes[i].getPacInterval()
+				x,y = nodes[i].getChannelIndicators(50)
+				sucPac,allPac = nodes[i].getPacStat(20)  # recent 20 stat
+				oldX,oldY = nodes[i].getOldXY()
+				if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
+					temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
+					nodes[i].setPacInterval(temp)
+				#print x,y
+				nodes[i].setOldXY(x,y)
 
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)

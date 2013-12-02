@@ -1,10 +1,12 @@
-def optimization(x,y,pacInterval,method):
+import math
+def optimization(x,y,pacSucRate,pacInterval,method):
 	# x is the busy channel prob
 	# y is the ack fail prob
 	# pacInterval, the current 
 	# method is the optimization method used.
 	# 1. the pre-defined optimum beta
 	# 2. return the original data arrival rate (no optimization)
+	# 3. pricing
 	# to be continued
 	beta = 0.36 # in terms of utility function
 	step = 20*20
@@ -17,5 +19,24 @@ def optimization(x,y,pacInterval,method):
 			return max(pacInterval + step,500) # the traffic is heavy. should decrease the data arrival rate
 	elif method == 2:
 		return pacInterval
-	# the problem is that the algorithm will not always converge to the same value
+	elif method == 3:
+		u = 0
+		lamb = 20
+		best = -1000
+		L = 4
+		m = 4
+		#for h in range(40,500):
+		#	u = pacSucRate/h - 4*lamb*(1-x**5)/h**2
+			#print pacSucRate
+		#	if u > best:
+		#		best = u
+		#		pacInterval = h
+		pacInterval = 2*L*lamb*(1-x**(m+1))/(pacSucRate+0.001)  #derivative for quadratic function
+		pacInterval = math.ceil(pacInterval)
+		print pacInterval
+		#print x,y
+		return pacInterval*20
+
+
+		
 	
