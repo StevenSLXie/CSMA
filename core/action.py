@@ -123,15 +123,7 @@ def action(curEvent,nodes):
 					#print temp
 					#print nodes[i].getChannelIndicators()
 				else:
-					temp = nodes[i].getPacInterval()
-					x,y = nodes[i].getChannelIndicators(50)
-					sucPac,allPac = nodes[i].getPacStat(20) # recent 20 stat
-					oldX,oldY = nodes[i].getOldXY()
-					if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
-						temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
-						nodes[i].setPacInterval(temp)
-					nodes[i].setOldXY(x,y)
-					
+					temp=dataRateOptm(20,50,0.01,nodes,i)					
 				new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 				newList.append(new)
 
@@ -211,15 +203,7 @@ def action(curEvent,nodes):
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				temp = nodes[i].getPacInterval()
-				x,y = nodes[i].getChannelIndicators(50)
-				sucPac,allPac = nodes[i].getPacStat(20) #recent 20 stat
-				oldX,oldY = nodes[i].getOldXY()
-				if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
-					temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
-					nodes[i].setPacInterval(temp)
-				nodes[i].setOldXY(x,y)
-
+				temp=dataRateOptm(20,50,0.01,nodes,i)
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
 
@@ -291,16 +275,7 @@ def action(curEvent,nodes):
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				temp = nodes[i].getPacInterval()
-				x,y = nodes[i].getChannelIndicators(50)
-				sucPac,allPac = nodes[i].getPacStat(20)  # recent 20 stat
-				oldX,oldY = nodes[i].getOldXY()
-				if abs(oldX-x) > 0.02 or abs(oldY-y)>0.02:
-					temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
-					nodes[i].setPacInterval(temp)
-				#print x,y
-				nodes[i].setOldXY(x,y)
-
+				temp=dataRateOptm(20,50,0.01,nodes,i)
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
 
@@ -310,3 +285,17 @@ def action(curEvent,nodes):
 			nodes[i].setBOCount(0)
 
 	return newList
+
+def dataRateOptm(numOfRecPacStat,numOfRecChanStat,threshold,nodes,i):
+	temp = nodes[i].getPacInterval()
+	x,y = nodes[i].getChannelIndicators(numOfRecChanStat)
+	sucPac,allPac = nodes[i].getPacStat(numOfRecPacStat)  # recent 20 stat
+	oldX,oldY = nodes[i].getOldXY()
+	if abs(oldX-x) > threshold or abs(oldY-y)>threshold:
+		temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
+		nodes[i].setPacInterval(temp)
+		#print x,y
+		nodes[i].setOldXY(x,y)
+
+	return temp
+

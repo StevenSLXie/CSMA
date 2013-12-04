@@ -6,6 +6,7 @@ import operator
 from initPacket import initPacket
 import math
 import random
+import csv
 
 def runSimulation(dataRate):
 	numOfNodes = 20
@@ -29,10 +30,19 @@ def runSimulation(dataRate):
 
 
 	min_t  = 0
+
+	data = []
+	for i in range(numOfNodes):
+		dataEach = []
+		data.append(dataEach)
+
 	while True:
+		if min_t%1000 < 0.15:
+			for i in range(numOfNodes-1):
+				data[i].append(nodes[i].getPacInterval())
 		if not eventList:
 			break
-		elif min_t > nodes[0].getPacInterval()*500:
+		elif min_t > nodes[0].getPacInterval()*100:
 			break
 		else:
 			min_index, min_t = min(enumerate(e.time for e in eventList),key=operator.itemgetter(1))
@@ -40,8 +50,15 @@ def runSimulation(dataRate):
 			eventList.pop(min_index)
 			for n in newList:
 				eventList.append(n)
+	
+	#for d in data:
+	#	writeResult(d,'result.csv')
+
 	statSuc = []
 	statAll = []
+	
+
+
 	for i in range(numOfNodes-1):
 		#nodes[i].setPacInterval((60+j*20)*20)
 		yes,num = nodes[i].getPacStat()
@@ -58,6 +75,12 @@ def runSimulation(dataRate):
 	#print nodes[1].getDelayStat()
 	#print sum(statSuc)/float(sum(statAll))/(nodes[1].getEnergyStat()/h)**8/h # 10000 is just to amplify the num
 	return (sum(statSuc)/float(sum(statAll)))**1/(nodes[1].getDelayStat())**2/h 
+
+def writeResult(result,fileName):
+	with open(fileName, 'wb') as csvfile:
+		writer = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+		for i in result:
+			writer.writerow(i)
 
 u = []
 overall = []

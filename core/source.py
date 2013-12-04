@@ -67,6 +67,9 @@ class source(object):
 # the following are the packet interval.
 		self.pacInterval = random.randint(60,2000)*20
 
+# the following are for optimization purpose.
+		self.allInterval = []  # the record of data each arrival rate
+
 	def getBOCount(self):
 		return self.BOCount
 
