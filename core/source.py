@@ -33,7 +33,7 @@ class source(object):
 		self.energy = 0 # J
 
 #=======
-		self.energy = 1000 # J
+		self.energy = 0 # J
 #>>>>>>> 8c1bc2b3aca1bda3f00ab1f1346aa632dfe8f351
 # the following are for traffic generator
 		self.poiInterval = 100  # poisson interval
@@ -65,7 +65,10 @@ class source(object):
 #=======
 #>>>>>>> 8c1bc2b3aca1bda3f00ab1f1346aa632dfe8f351
 # the following are the packet interval.
-		self.pacInterval = random.randint(60,2000)*20
+		if self.ID < 10:
+			self.pacInterval = random.randint(50,51)*20
+		else:
+			self.pacInterval = random.randint(0,0)*20
 
 # the following are for optimization purpose.
 		self.allInterval = []  # the record of data each arrival rate
@@ -255,3 +258,8 @@ class source(object):
 		self.oldX = x
 		self.oldY = y
 
+	def insertPastInterval(self,value):
+		self.allInterval.append(value)
+
+	def getAverageInterval(self):
+		return sum(self.allInterval[-30:])/30

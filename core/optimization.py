@@ -21,7 +21,7 @@ def optimization(x,y,pacSucRate,pacInterval,method):
 		return pacInterval
 	elif method == 3:
 		u = 0
-		lamb = 5
+		lamb = 20
 		best = -1000
 		L = 4
 		m = 4
@@ -31,12 +31,14 @@ def optimization(x,y,pacSucRate,pacInterval,method):
 		#	if u > best:
 		#		best = u
 		#		pacInterval = h
-		pacInterval = 2*L*lamb*(1-x**(m+1))/(pacSucRate+0.001)  #derivative for quadratic function
-		pacInterval = math.ceil(pacInterval)
+		if pacSucRate < 0.1:
+			pacSucRate = 0.1
+		pacInterval = 2*L*lamb*(1-x**(m+1))/(pacSucRate)  #derivative for quadratic function
+		#pacInterval = math.ceil(pacInterval)
 		u = pacSucRate/(pacInterval+0.01) - 4*lamb*(1-x**5)/(pacInterval+0.01)**2
-		print pacInterval,u
+		#print pacInterval,u
 		#print x,y
-		return pacInterval*20
+		return math.ceil(pacInterval*20)
 
 
 		

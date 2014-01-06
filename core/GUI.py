@@ -9,7 +9,6 @@ from initPacket import initPacket
 import time
 import random
 
-
 class zigbeeNode(wx.Frame):
 	def __init__(self):
 		wx.Frame.__init__(self,None,-1,'Zigbee Node Panel',size=(500,400))
@@ -93,7 +92,7 @@ class zigbeeNode(wx.Frame):
 
 
 	def onStartConfig(self,event):
-		numOfNodes = 40
+		numOfNodes = 20
 		for i in range(numOfNodes):  # initialize nodes
 			argv = {}
 			argv['ID'] = i

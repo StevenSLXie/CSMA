@@ -116,14 +116,15 @@ def action(curEvent,nodes):
 #		print 'Exceeds backoff limit...'
 				
 				nodes[i].timeStamping(t,'end')    # can add 100000000 to indicate failure.
-
+				#nodes[i].timeStamping(nodes[i].getPacStart()+nodes[i].getPacInterval(),'end')  # use pac interval as the max delay
 				# schedule new packet transmission.
-				if t < 10000*20:
+				if t < 100*20:
 					temp = nodes[i].getPacInterval()
 					#print temp
 					#print nodes[i].getChannelIndicators()
 				else:
-					temp=dataRateOptm(20,50,0.01,nodes,i)					
+					temp=dataRateOptm(1,1,0.01,nodes,i)	
+					nodes[i].insertPastInterval(temp)
 				new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 				newList.append(new)
 
@@ -196,14 +197,17 @@ def action(curEvent,nodes):
 			#transmission failed.
 			#print arg,'Exceed retry limit....'
 			nodes[i].timeStamping(t,'end')
+			#nodes[i].timeStamping(nodes[i].getPacStart()+nodes[i].getPacInterval(),'end')  # use pac interval as the max delay
 
 			# schedule new packet transmission
-			if t < 10000*20:
+			if t < 100*20:
 				temp = nodes[i].getPacInterval()
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				temp=dataRateOptm(20,50,0.01,nodes,i)
+				temp=dataRateOptm(1,1,0.01,nodes,i)
+				nodes[i].insertPastInterval(temp)
+
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
 
@@ -270,12 +274,13 @@ def action(curEvent,nodes):
 			nodes[i].updateTRYStat('suc')
 			nodes[i].timeStamping(t,'end')
 			# to schedule next packet transmission. When t is small, channel indicators are not stable.
-			if t < 10000*20:
+			if t < 100*20:
 				temp = nodes[i].getPacInterval()
 				#print temp
 				#print nodes[i].getChannelIndicators()
 			else:
-				temp=dataRateOptm(20,50,0.01,nodes,i)
+				temp=dataRateOptm(1,1,0.01,nodes,i)
+				nodes[i].insertPastInterval(temp)
 			new = initPacket(nodes[i].getPacStart()+random.randint(temp-50,temp+50),i,len(nodes))
 			newList.append(new)
 
@@ -287,15 +292,18 @@ def action(curEvent,nodes):
 	return newList
 
 def dataRateOptm(numOfRecPacStat,numOfRecChanStat,threshold,nodes,i):
+	#print i
 	temp = nodes[i].getPacInterval()
 	x,y = nodes[i].getChannelIndicators(numOfRecChanStat)
 	sucPac,allPac = nodes[i].getPacStat(numOfRecPacStat)  # recent 20 stat
+	if allPac < 1:
+		return temp
 	oldX,oldY = nodes[i].getOldXY()
 	if abs(oldX-x) > threshold or abs(oldY-y)>threshold:
-		temp = optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
+		temp= optimization(x,y,sucPac/float(allPac),nodes[i].getPacInterval(),3)
 		nodes[i].setPacInterval(temp)
 		#print x,y
 		nodes[i].setOldXY(x,y)
-
+	#print i,temp
 	return temp
 
